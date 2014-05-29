@@ -30,17 +30,6 @@ struct instructions_list_s
 	struct instructions_list_s* next;
 };
 
-instructions_list_t* x86_ref_create_instructions_list(void)
-{
-	instructions_list_t* instructions_list = NULL;
-
-	instructions_list = malloc(sizeof(instructions_list_t));
-	instructions_list->instruction = NULL;
-	instructions_list->next = NULL;
-
-	return instructions_list;
-}
-
 instruction_t* x86_ref_create_instruction(const char* mnemonic,
 										  const char* opcode,
 										  const char* short_desc)

@@ -11,7 +11,6 @@ typedef struct ref_database_s 		ref_database_t;
 typedef struct instruction_s 		instruction_t;
 typedef struct instructions_list_s 	instructions_list_t;
 
-X86_REF_API instructions_list_t* 	x86_ref_create_instructions_list(void);
 X86_REF_API int 					x86_ref_add_instruction_to_list(instructions_list_t** instructions_list,
 														instruction_t* instruction);
 X86_REF_API instruction_t* 			x86_ref_next_instruction_from_list(instructions_list_t** instructions_list);

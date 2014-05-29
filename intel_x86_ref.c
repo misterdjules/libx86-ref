@@ -8,8 +8,8 @@
 
 #include "intel_x86_ref.h"
 
-#define SELECT_ALL_FROM_INSTRUCTIONS "SELECT * FROM instructions"
-#define SELECT_INSTRUCTION_BY_MNEMONIC "SELECT * FROM instructions WHERE mnemonic = (?)"
+#define SELECT_ALL_FROM_INSTRUCTIONS	"SELECT * FROM instructions"
+#define SELECT_INSTRUCTION_BY_MNEMONIC	"SELECT * FROM instructions WHERE mnemonic=(?)"
 
 struct ref_database_s
 {
@@ -49,9 +49,12 @@ instruction_t* x86_ref_create_instruction(const char* mnemonic,
 	if (!new_instruction)
 		return NULL;
 
+#pragma warning(push)
+#pragma warning(disable: 4996)
 	new_instruction->mnemonic   = strdup(mnemonic);
 	new_instruction->opcode     = strdup(opcode);
 	new_instruction->short_desc = strdup(short_desc);
+#pragma warning(pop)
 
 	return new_instruction;
 }
@@ -173,7 +176,10 @@ ref_database_t* x86_ref_open_database(const char* db_path)
 	ref_db = malloc(sizeof(ref_database_t));
 	if (!ref_db)
 	{
+#pragma warning(push)
+#pragma warning(disable: 4996)
 		fprintf(stderr, "Could not allocate memory, reason: %s\n", strerror(errno));
+#pragma warning(pop)
 		return NULL;
 	}
 

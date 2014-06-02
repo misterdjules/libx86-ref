@@ -225,6 +225,18 @@ int x86_ref_search_instructions_by_mnemonic(const ref_database_t* ref_db,
 	return 1;
 }
 
+size_t x86_ref_instructions_list_get_size(const instructions_list_t* instructions_list)
+{
+	size_t size = 0;
+	while (instructions_list)
+	{
+		++size;
+		instructions_list = instructions_list->next;
+	}
+
+	return size;
+}
+
 instructions_list_t* x86_ref_get_all_instructions(const ref_database_t* ref_db)
 {
 	int rc             = -1;

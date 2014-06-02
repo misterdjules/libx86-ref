@@ -13,6 +13,10 @@
 	#define X86_REF_API
 #endif /* _WIN32 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* _cplusplus */
+
 typedef struct ref_database_s 		ref_database_t;
 typedef struct instruction_s 		instruction_t;
 typedef struct instructions_list_s 	instructions_list_t;
@@ -42,6 +46,11 @@ X86_REF_API instructions_list_t* 	x86_ref_get_all_instructions(const ref_databas
  * Returns NULL when it reaches the end of the list.
  */
 X86_REF_API instruction_t* 	x86_ref_next_instruction_from_list(instructions_list_t** instructions_list);
+
+/*
+ * Returns the number of elements in the list "instructions_list".
+ */
+X86_REF_API size_t x86_ref_instructions_list_get_size(const instructions_list_t* instructions_list);
 
 /*
  * Deallocates all resources used by the list "instructions_list".
@@ -88,5 +97,9 @@ X86_REF_API const char* x86_ref_get_instruction_short_desc(const instruction_t* 
 
 
 X86_REF_API const char* x86_ref_errmsg(ref_database_t* ref_db);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* _INTEL_X86_REF_H_ */

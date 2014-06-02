@@ -38,13 +38,16 @@ instruction_t* x86_ref_create_instruction(const char* mnemonic,
 	if (!new_instruction)
 		return NULL;
 
-#pragma warning(push)
-#pragma warning(disable: 4996)
+#ifdef _WIN32
+	#pragma warning(push)
+	#pragma warning(disable: 4996)
+#endif /* _WIN32 */
 	new_instruction->mnemonic   = strdup(mnemonic);
 	new_instruction->opcode     = strdup(opcode);
 	new_instruction->short_desc = strdup(short_desc);
-#pragma warning(pop)
-
+#ifdef _WIN32
+	#pragma warning(pop)
+#endif /* _WIN32 */
 	return new_instruction;
 }
 
@@ -82,14 +85,14 @@ const char* x86_ref_get_instruction_short_desc(const instruction_t* instruction)
 	return instruction->short_desc;
 }
 
-void x86_ref_destroy_instructions_list(instructions_list_t* instructions_list)
+int x86_ref_destroy_instructions_list(instructions_list_t* instructions_list)
 {
 	instructions_list_t* node_to_deallocate = NULL;
 
 	assert(instructions_list);
 
 	if (!instructions_list)
-		return;
+		return 1;
 
 	while (instructions_list)
 	{
@@ -100,6 +103,8 @@ void x86_ref_destroy_instructions_list(instructions_list_t* instructions_list)
 		x86_ref_destroy_instruction(&node_to_deallocate->instruction);
 		free(node_to_deallocate);
 	}
+
+	return X86_REF_OK;
 }
 
 int x86_ref_add_instruction_to_list(instructions_list_t** instructions_list,
@@ -165,10 +170,14 @@ ref_database_t* x86_ref_open_database(const char* db_path)
 	ref_db = malloc(sizeof(ref_database_t));
 	if (!ref_db)
 	{
-#pragma warning(push)
-#pragma warning(disable: 4996)
+#ifdef _WIN32
+	#pragma warning(push)
+	#pragma warning(disable: 4996)
+#endif /* _WIN32 */
 		fprintf(stderr, "Could not allocate memory, reason: %s\n", strerror(errno));
-#pragma warning(pop)
+#ifdef _WIN32
+	#pragma warning(pop)
+#endif /* _WIN32 */
 		return NULL;
 	}
 
@@ -209,14 +218,14 @@ const char* x86_ref_errmsg(ref_database_t* ref_db)
 	return NULL;
 }
 
-int x86_ref_search_mnemonic(const ref_database_t* ref_db,
+int x86_ref_search_instructions_by_mnemonic(const ref_database_t* ref_db,
 							const char* pattern,
 							instruction_t* instructions)
 {
 	return 1;
 }
 
-instructions_list_t* x86_ref_list_instructions(const ref_database_t* ref_db)
+instructions_list_t* x86_ref_get_all_instructions(const ref_database_t* ref_db)
 {
 	int rc             = -1;
 	sqlite3_stmt* stmt = NULL;

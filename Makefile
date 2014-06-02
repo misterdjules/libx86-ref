@@ -1,3 +1,5 @@
+include ../../mktools/show_make_rules.mk
+
 lib_x86_ref := libx86ref.so
 sources := intel_x86_ref.c
 objects := $(subst .c,.o,$(sources))
@@ -15,8 +17,8 @@ all: $(lib_x86_ref)
 $(lib_x86_ref): $(objects)
 	$(CC) $< $(LDFLAGS) -o $@
 
-%.o: %.c
+%.o: %.c intel_x86_ref.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 clean:
-	rm -f $(lib_x86_ref)
+	rm -f $(lib_x86_ref) *.o

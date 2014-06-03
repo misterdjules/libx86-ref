@@ -157,7 +157,7 @@ ref_database_t* x86_ref_open_database(const char* db_path)
 	int rc                 = -1;
 	ref_database_t* ref_db = NULL;
 
-	rc = sqlite3_open(db_path, &sqlite3_db);
+	rc = sqlite3_open_v2(db_path, &sqlite3_db, SQLITE_OPEN_READONLY, NULL);
 	if (rc != SQLITE_OK)
 	{
 		fprintf(stderr, "Could not open database at path [%s], reason: %s\n",

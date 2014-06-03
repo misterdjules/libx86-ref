@@ -4,11 +4,13 @@
 #define X86_REF_OK 0
 
 #ifdef _WIN32
-	#ifdef X86_REF_EXPORTING
+	#ifdef X86_REF_DLL_EXPORT
 		#define X86_REF_API __declspec(dllexport)
-	#else
+	#elif !defined(X86_REF_STATIC)
 		#define X86_REF_API __declspec(dllimport)
-	#endif /* X86_REF_EXPORTING */
+	#else
+		#define X86_REF_API
+	#endif /* X86_REF_DLL_EXPORT */
 #else
 	#define X86_REF_API
 #endif /* _WIN32 */

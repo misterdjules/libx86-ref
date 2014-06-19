@@ -44,6 +44,17 @@ X86_REF_API int 			x86_ref_close_database(ref_database_t** ref_db);
 X86_REF_API instructions_list_t* 	x86_ref_get_all_instructions(const ref_database_t* ref_db);
 
 /*
+ * Returns a pointer to a instructions_list_t that can be used to iterate over all
+ * instructions stored in the database "ref_db" that match the prefix "prefix".
+ * For instance:
+ * x86_ref_search_instructions_by_mnemonic(ref_db, "A");
+ * will return the instructions "AAA", "AAD", "AAM", "AAS", "ADC", "ADD", etc.
+ * The returned list can later be destroyed by using the "x86_ref_destroy_instructions_list".
+ */
+X86_REF_API instructions_list_t* 	x86_ref_search_instructions_by_mnemonic(const ref_database_t* ref_db,
+																			const char* prefix);
+
+/*
  * Returns a pointer to the next instruction_t object stored in the list "instructions_list".
  * Returns NULL when it reaches the end of the list.
  */
@@ -58,10 +69,7 @@ X86_REF_API size_t x86_ref_instructions_list_get_size(const instructions_list_t*
  * Deallocates all resources used by the list "instructions_list".
  * Returns X86_REF_OK if successful, any other value otherwise.
  */
-X86_REF_API int 					x86_ref_destroy_instructions_list(instructions_list_t* instructions_list);
-X86_REF_API int 					x86_ref_search_instructions_by_mnemonic(const ref_database_t* ref_db,
-																			const char* pattern,
-																			instruction_t* instructions);
+X86_REF_API int x86_ref_destroy_instructions_list(instructions_list_t* instructions_list);
 
 /*
  * Returns a pointer to an instruction_t given a mnemonic.
@@ -77,6 +85,15 @@ X86_REF_API instruction_t* 	x86_ref_get_instruction_by_mnemonic(const ref_databa
  * Returns NULL if instruction is NULL.
  */
 X86_REF_API const char* x86_ref_get_instruction_mnemonic(const instruction_t* instruction);
+
+/*
+ * Returns a string representing the synopsis for instruction "instruction".
+ * For instance, if "instruction" points to an ADD instruction,
+ * x86_ref_get_instruction_mnemonic will return the string "Add".
+ *
+ * Returns NULL if instruction is NULL.
+ */
+X86_REF_API const char* x86_ref_get_instruction_synopsis(const instruction_t* instruction);
 
 /*
  * Returns a string representing the opcode for instruction "instruction".

@@ -12,7 +12,7 @@ debug_lib_dir := ../debug
 jstring_static_lib := $(jstring_lib_dir)/libjstring.a
 debug_static_lib := $(debug_lib_dir)/libdebug.a
 
-include_dirs := ./ $(sqlite_helper_dir) $(debug_lib_dir)
+include_dirs := ./ $(sqlite_helper_dir) $(debug_lib_dir) $(jstring_lib_dir)
 
 sqlite_helper_static_lib := $(sqlite_helper_dir)/libsqlitehelper.a
 

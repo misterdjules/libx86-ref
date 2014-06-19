@@ -8,6 +8,7 @@
 
 #include <debug.h>
 #include <sqlite_helper.h>
+#include <jstring.h>
 
 #include "intel_x86_ref.h"
 
@@ -28,6 +29,7 @@ struct instruction_s
 	const char* opcode;
 	const char* short_desc;
 	const char* long_desc;
+	const char* affected_flags;
 };
 
 struct instructions_list_s
@@ -47,7 +49,8 @@ instruction_t* x86_ref_create_empty_instruction(void)
 instruction_t* x86_ref_create_instruction(const char* mnemonic,
 										  const char* opcode,
 										  const char* synopsis,
-										  const char* short_desc)
+										  const char* short_desc,
+										  const char* affected_flags)
 {
 	instruction_t* new_instruction = x86_ref_create_empty_instruction();
 	if (!new_instruction)
@@ -61,10 +64,11 @@ instruction_t* x86_ref_create_instruction(const char* mnemonic,
 	 */
 	#pragma warning(disable: 4996)
 #endif /* _WIN32 */
-	new_instruction->mnemonic   = strdup(mnemonic);
-	new_instruction->opcode     = strdup(opcode);
-	new_instruction->synopsis   = strdup(synopsis);
-	new_instruction->short_desc = strdup(short_desc);
+	new_instruction->mnemonic       = strdup(mnemonic);
+	new_instruction->opcode         = strdup(opcode);
+	new_instruction->synopsis       = strdup(synopsis);
+	new_instruction->short_desc     = strdup(short_desc);
+	new_instruction->affected_flags = strdup(affected_flags);
 #ifdef _WIN32
 	#pragma warning(pop)
 #endif /* _WIN32 */
@@ -176,12 +180,24 @@ int set_field_long_desc(instruction_t* instruction, const char* value)
 	return X86_REF_OK;
 }
 
+int set_field_affected_flags(instruction_t* instruction, const char* value)
+{
+	/*
+	 * strduping the value here since it's managed by sqlite3 and will
+	 * be deallocated in the near future.
+	 */
+	instruction->affected_flags = strdup(value);
+
+	return X86_REF_OK;
+}
+
 static set_field_operation_spec_t set_fields_op[] = {
 	{ "mnemonic", 			set_field_mnemonic },
 	{ "opcode", 			set_field_opcode },
 	{ "synopsis", 			set_field_synopsis },
 	{ "short_description", 	set_field_short_desc },
 	{ "long_description", 	set_field_long_desc },
+	{ "affected_flags", 	set_field_affected_flags },
 };
 static size_t nb_instruction_fields = 	sizeof(set_fields_op) /
 										sizeof(set_field_operation_spec_t);
@@ -438,7 +454,11 @@ instructions_list_t* x86_ref_get_all_instructions(const ref_database_t* ref_db)
 	const char* sql_statement_string = sqlite_helper_sql_statement_to_string(sql_statement);
 	x86_ref_debug("SQL statement string: [%s]\n", sql_statement_string);
 
-	if (sqlite3_exec(ref_db->db, sql_statement_string, &get_all_instructions_cb, (void*)&instructions_list, &err_msg) != SQLITE_OK)
+	if (sqlite3_exec(ref_db->db,
+					 sql_statement_string,
+					 &get_all_instructions_cb,
+					 (void*)&instructions_list,
+					 &err_msg) != SQLITE_OK)
 	{
 		fprintf(stderr, "An error occured when executing an SQL statement:\n%s\n",
 				sql_statement_string);
@@ -463,66 +483,48 @@ X86_REF_API instructions_list_t* x86_ref_search_instructions_by_mnemonic(const r
 instruction_t* x86_ref_get_instruction_by_mnemonic(const ref_database_t* ref_db,
 												   const char* mnemonic)
 {
-	int rc                     = -1;
-	sqlite3_stmt* stmt         = NULL;
-	unsigned int row_number    = 0;
-	instruction_t* instruction = NULL;
-
-	const char* opcode     = NULL;
-	const char* synopsis   = NULL;
-	const char* short_desc = NULL;
+	instructions_list_t* instructions_list 	= NULL;
+	const char* where_clause               	= NULL;
+	sql_statement_t* sql_statement         	= NULL;
+	const char* sql_statement_string 		= NULL;
+	char* err_msg 							= NULL;
+	int nb_instructions 					= 0;
+	const char* row_columns[] 				= { "*", NULL};
 
 	assert(ref_db);
-	if (!ref_db)
+	assert(mnemonic);
+
+	if (!ref_db || !mnemonic)
 		return NULL;
 
-	rc = sqlite3_prepare_v2(ref_db->db,
-							SELECT_INSTRUCTION_BY_MNEMONIC,
-							strlen(SELECT_INSTRUCTION_BY_MNEMONIC),
-							&stmt,
-							NULL);
-	if (rc != SQLITE_OK)
+	where_clause = jstr_format("mnemonic='%s'", mnemonic);
+	if (!where_clause)
+		return NULL;
+
+	sql_statement = sqlite_helper_create_sql_statement("SELECT",
+													   row_columns,
+													   "instructions",
+													   where_clause);
+	if (!sql_statement)
+		return NULL;
+
+	sql_statement_string = sqlite_helper_sql_statement_to_string(sql_statement);
+	x86_ref_debug("SQL statement: [%s]\n", sql_statement_string);
+	if (sqlite3_exec(ref_db->db,
+					 sql_statement_string,
+					 &get_all_instructions_cb,
+					 (void*)&instructions_list,
+					 &err_msg) != SQLITE_OK)
 	{
-		fprintf(stderr, "Couldn't prepare statement [%s], reason: %s\n",
-			SELECT_INSTRUCTION_BY_MNEMONIC,
-			sqlite3_errmsg(ref_db->db));
-		sqlite3_close(ref_db->db);
 		return NULL;
 	}
 
-	rc = sqlite3_bind_text(stmt, 1, mnemonic, strlen(mnemonic), SQLITE_STATIC);
-	if (rc != SQLITE_OK)
+	nb_instructions = x86_ref_instructions_list_get_size(instructions_list);
+	assert(nb_instructions <= 1);
+	if (nb_instructions > 1)
 	{
-		fprintf(stderr, "Couldn't bin the mnemonic parameter to the SQL statement, reason: %s\n",
-			    sqlite3_errmsg(ref_db->db));
-		sqlite3_close(ref_db->db);
 		return NULL;
 	}
 
-	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW)
-	{
-		assert(row_number == 0);
-		if (row_number != 0)
-			break;
-
-		opcode     = (const char*)sqlite3_column_text(stmt, 1);
-		synopsis   = (const char*)sqlite3_column_text(stmt, 2);
-		short_desc = (const char*)sqlite3_column_text(stmt, 3);
-
-		instruction = x86_ref_create_instruction(mnemonic, opcode, synopsis, short_desc);
-
-		++row_number;
-	}
-
-	if (rc != SQLITE_DONE)
-	{
-		fprintf(stderr, "Warning: SQLite statement not done\n");
-	}
-
-	if (sqlite3_finalize(stmt) != SQLITE_OK)
-	{
-		fprintf(stderr, "Couldn't finalize SQLite statement\n");
-	}
-
-	return instruction;
+	return x86_ref_next_instruction_from_list(&instructions_list);
 }

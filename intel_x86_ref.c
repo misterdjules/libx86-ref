@@ -12,9 +12,6 @@
 
 #include "intel_x86_ref.h"
 
-#define SELECT_INSTRUCTION_BY_MNEMONIC	"SELECT * FROM instructions WHERE mnemonic=(?)"
-#define SEARCH_INSTRUCTION_BY_MNEMONIC  "SELECT * FROM instructions WHERE mnemonic LIKE (?)"
-
 CREATE_DEBUG_CTX(x86_ref);
 
 struct ref_database_s

@@ -440,69 +440,22 @@ static int get_all_instructions_cb(void* instructions,
 	return 0;
 }
 
-instructions_list_t* x86_ref_get_all_instructions(const ref_database_t* ref_db)
-{
-	instructions_list_t* instructions_list = NULL;
-	char* err_msg                          = NULL;
-
-	const char* row_fields[] = { "mnemonic", "opcode", "synopsis", "short_description", NULL };
-	sql_statement_t* sql_statement = sqlite_helper_create_sql_statement("SELECT",
-																		row_fields,
-																		"instructions",
-																		NULL);
-
-	const char* sql_statement_string = sqlite_helper_sql_statement_to_string(sql_statement);
-	x86_ref_debug("SQL statement string: [%s]\n", sql_statement_string);
-
-	if (sqlite3_exec(ref_db->db,
-					 sql_statement_string,
-					 &get_all_instructions_cb,
-					 (void*)&instructions_list,
-					 &err_msg) != SQLITE_OK)
-	{
-		fprintf(stderr, "An error occured when executing an SQL statement:\n%s\n",
-				sql_statement_string);
-		if (err_msg)
-		{
-			fprintf(stderr, "reason: %s\n", err_msg);
-		}
-
-		return NULL;
-	}
-
-	return instructions_list;
-}
-
-X86_REF_API instructions_list_t* x86_ref_search_instructions_by_mnemonic(const ref_database_t* ref_db,
-																		 const char* prefix)
-{
-	/* not implemented */
-	assert(0);
-}
-
-instruction_t* x86_ref_get_instruction_by_mnemonic(const ref_database_t* ref_db,
-												   const char* mnemonic)
+static instructions_list_t* get_instructions_list(const ref_database_t* ref_db,
+												const char** fields,
+												const char* where_clause)
 {
 	instructions_list_t* instructions_list 	= NULL;
-	const char* where_clause               	= NULL;
 	sql_statement_t* sql_statement         	= NULL;
 	const char* sql_statement_string 		= NULL;
 	char* err_msg 							= NULL;
-	int nb_instructions 					= 0;
-	const char* row_columns[] 				= { "*", NULL};
 
 	assert(ref_db);
-	assert(mnemonic);
 
-	if (!ref_db || !mnemonic)
-		return NULL;
-
-	where_clause = jstr_format("mnemonic='%s'", mnemonic);
-	if (!where_clause)
+	if (!ref_db)
 		return NULL;
 
 	sql_statement = sqlite_helper_create_sql_statement("SELECT",
-													   row_columns,
+													   fields,
 													   "instructions",
 													   where_clause);
 	if (!sql_statement)
@@ -516,9 +469,58 @@ instruction_t* x86_ref_get_instruction_by_mnemonic(const ref_database_t* ref_db,
 					 (void*)&instructions_list,
 					 &err_msg) != SQLITE_OK)
 	{
+		fprintf(stderr, "An error occured when executing an SQL statement:\n%s\n",
+				sql_statement_string);
+
+		if (err_msg)
+			fprintf(stderr, "reason: %s\n", err_msg);
+
 		return NULL;
 	}
 
+	return instructions_list;
+}
+
+instructions_list_t* x86_ref_get_all_instructions(const ref_database_t* ref_db)
+{
+	instructions_list_t* instructions_list = NULL;
+	const char* row_fields[]               = { "*", NULL };
+
+	return get_instructions_list(ref_db, row_fields, NULL);
+}
+
+X86_REF_API instructions_list_t* x86_ref_search_instructions_by_mnemonic(const ref_database_t* ref_db,
+																		 const char* prefix)
+{
+	const char* row_fields[]               = { "*", NULL };
+	const char* where_clause = NULL;
+
+	where_clause = jstr_format("mnemonic LIKE '%s%%'", prefix);
+	if (!where_clause)
+		return NULL;
+
+	return get_instructions_list(ref_db, row_fields, where_clause);
+}
+
+instruction_t* x86_ref_get_instruction_by_mnemonic(const ref_database_t* ref_db,
+												   const char* mnemonic)
+{
+	instructions_list_t* instructions_list 	= NULL;
+	const char* where_clause               	= NULL;
+	int nb_instructions 					= 0;
+	const char* row_columns[] 				= { "*", NULL};
+
+	assert(ref_db);
+	assert(mnemonic);
+
+	if (!ref_db || !mnemonic)
+		return NULL;
+
+	where_clause = jstr_format("mnemonic='%s'", mnemonic);
+	if (!where_clause)
+		return NULL;
+
+	instructions_list = get_instructions_list(ref_db, row_columns, where_clause);
 	nb_instructions = x86_ref_instructions_list_get_size(instructions_list);
 	assert(nb_instructions <= 1);
 	if (nb_instructions > 1)

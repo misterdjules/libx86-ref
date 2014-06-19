@@ -124,7 +124,7 @@ typedef struct set_fields_operation_spec_s
 	set_field_operation_t 	op;
 } set_field_operation_spec_t;
 
-int set_field_mnemonic(instruction_t* instruction, const char* value)
+static int set_field_mnemonic(instruction_t* instruction, const char* value)
 {
 	/*
 	 * strduping the value here since it's managed by sqlite3 and will
@@ -135,7 +135,7 @@ int set_field_mnemonic(instruction_t* instruction, const char* value)
 	return X86_REF_OK;
 }
 
-int set_field_opcode(instruction_t* instruction, const char* value)
+static int set_field_opcode(instruction_t* instruction, const char* value)
 {
 	/*
 	 * strduping the value here since it's managed by sqlite3 and will
@@ -146,7 +146,7 @@ int set_field_opcode(instruction_t* instruction, const char* value)
 	return X86_REF_OK;
 }
 
-int set_field_synopsis(instruction_t* instruction, const char* value)
+static int set_field_synopsis(instruction_t* instruction, const char* value)
 {
 	/*
 	 * strduping the value here since it's managed by sqlite3 and will
@@ -158,7 +158,7 @@ int set_field_synopsis(instruction_t* instruction, const char* value)
 	return X86_REF_OK;
 }
 
-int set_field_short_desc(instruction_t* instruction, const char* value)
+static int set_field_short_desc(instruction_t* instruction, const char* value)
 {
 	/*
 	 * strduping the value here since it's managed by sqlite3 and will
@@ -169,7 +169,7 @@ int set_field_short_desc(instruction_t* instruction, const char* value)
 	return X86_REF_OK;
 }
 
-int set_field_long_desc(instruction_t* instruction, const char* value)
+static int set_field_long_desc(instruction_t* instruction, const char* value)
 {
 	/*
 	 * strduping the value here since it's managed by sqlite3 and will
@@ -180,7 +180,7 @@ int set_field_long_desc(instruction_t* instruction, const char* value)
 	return X86_REF_OK;
 }
 
-int set_field_affected_flags(instruction_t* instruction, const char* value)
+static int set_field_affected_flags(instruction_t* instruction, const char* value)
 {
 	/*
 	 * strduping the value here since it's managed by sqlite3 and will

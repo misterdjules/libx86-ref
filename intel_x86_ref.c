@@ -223,8 +223,9 @@ int x86_ref_instruction_set_field(instruction_t* instruction,
 
 	assert(instruction);
 	assert(field_name);
+	assert(value);
 
-	if (!instruction || !field_name)
+	if (!instruction || !field_name || !value)
 	{
 		return 1;
 	}
@@ -418,11 +419,11 @@ static int get_all_instructions_cb(void* instructions,
 	new_instruction = x86_ref_create_empty_instruction();
 	for (column_index = 0; column_index < nb_columns; ++column_index)
 	{
-		x86_ref_debug("column: %s, value: %s\n", names[column_index], values[column_index]);
-
-		if (x86_ref_instruction_set_field(new_instruction,
-										  names[column_index],
-										  values[column_index]) != X86_REF_OK)
+		x86_ref_debug("column: [%s], value: [%s]\n", names[column_index], values[column_index]);
+		if (values[column_index] &&
+			(x86_ref_instruction_set_field(new_instruction,
+										   names[column_index],
+										   values[column_index]) != X86_REF_OK))
 		{
 			return 1;
 		}

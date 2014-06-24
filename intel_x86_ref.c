@@ -196,8 +196,8 @@ int x86_ref_instruction_set_field(instruction_t* instruction,
 								  const char* field_name,
 								  const char* value)
 {
-	int valid_field = 0;
-	int field_op_index = 0;
+	int valid_field       = 0;
+	size_t field_op_index = 0;
 
 	assert(instruction);
 	assert(field_name);
@@ -459,7 +459,6 @@ static instructions_list_t* get_instructions_list(const ref_database_t* ref_db,
 
 instructions_list_t* x86_ref_get_all_instructions(const ref_database_t* ref_db)
 {
-	instructions_list_t* instructions_list = NULL;
 	const char* row_fields[]               = { "*", NULL };
 
 	return get_instructions_list(ref_db, row_fields, NULL);

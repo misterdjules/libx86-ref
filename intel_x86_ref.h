@@ -72,6 +72,12 @@ X86_REF_API size_t x86_ref_instructions_list_get_size(const instructions_list_t*
 X86_REF_API int x86_ref_destroy_instructions_list(instructions_list_t* instructions_list);
 
 /*
+ * Deallocates resources used by the instruction pointed to by *instruction
+ * and sets the *instruction pointer to NULL.
+ */
+X86_REF_API void x86_ref_destroy_instruction(instruction_t** instruction);
+
+/*
  * Returns a pointer to an instruction_t given a mnemonic.
  */
 X86_REF_API instruction_t* 	x86_ref_get_instruction_by_mnemonic(const ref_database_t* ref_db,
@@ -108,12 +114,21 @@ X86_REF_API const char* x86_ref_get_instruction_opcode(const instruction_t* inst
  * Returns a string representing the short description for instruction "instruction".
  * For instance, if "instruction" points to an ADD instruction,
  * x86_ref_get_instruction_short_desc will return a string that describes what the ADD
- * instruction does.
+ * instruction does, but not in full details.
  *
  * Returns NULL if instruction is NULL.
  */
 X86_REF_API const char* x86_ref_get_instruction_short_desc(const instruction_t* instruction);
 
+/*
+ * Returns a string representing the long description for instruction "instruction".
+ * For instance, if "instruction" points to an ADD instruction,
+ * x86_ref_get_instruction_long_desc will return a string that describes what the ADD
+ * instruction does in full details.
+ *
+ * Returns NULL if instruction is NULL.
+ */
+X86_REF_API const char* x86_ref_get_instruction_long_desc(const instruction_t* instruction);
 
 X86_REF_API const char* x86_ref_errmsg(ref_database_t* ref_db);
 

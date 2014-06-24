@@ -43,35 +43,6 @@ instruction_t* x86_ref_create_empty_instruction(void)
 	return new_instruction;
 }
 
-instruction_t* x86_ref_create_instruction(const char* mnemonic,
-										  const char* opcode,
-										  const char* synopsis,
-										  const char* short_desc,
-										  const char* affected_flags)
-{
-	instruction_t* new_instruction = x86_ref_create_empty_instruction();
-	if (!new_instruction)
-		return NULL;
-
-#ifdef _WIN32
-	#pragma warning(push)
-	/*
-	 * Disable warning about strdup being unsafe
-	 * because it doesn't affect us.
-	 */
-	#pragma warning(disable: 4996)
-#endif /* _WIN32 */
-	new_instruction->mnemonic       = strdup(mnemonic);
-	new_instruction->opcode         = strdup(opcode);
-	new_instruction->synopsis       = strdup(synopsis);
-	new_instruction->short_desc     = strdup(short_desc);
-	new_instruction->affected_flags = strdup(affected_flags);
-#ifdef _WIN32
-	#pragma warning(pop)
-#endif /* _WIN32 */
-	return new_instruction;
-}
-
 void x86_ref_destroy_instruction(instruction_t** instruction)
 {
 	assert(instruction);
@@ -111,6 +82,13 @@ const char* x86_ref_get_instruction_short_desc(const instruction_t* instruction)
 	assert(instruction);
 
 	return instruction->short_desc;
+}
+
+const char* x86_ref_get_instruction_long_desc(const instruction_t* instruction)
+{
+	assert(instruction);
+
+	return instruction->long_desc;
 }
 
 typedef int (*set_field_operation_t)(instruction_t* instruction, const char* value);

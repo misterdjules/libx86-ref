@@ -1,13 +1,13 @@
-include ../../mktools/show_make_rules.mk
+include deps/mktools/show_make_rules.mk
 
 lib_x86_ref_dyn_shared  := libx86ref.so
 lib_x86_ref_static		:= libx86ref.a
 sources					:= intel_x86_ref.c
 objects					:= $(subst .c,.o,$(sources))
 
-sqlite_helper_dir := ../sqlite-helper
-jstring_lib_dir := ../jstring
-debug_lib_dir := ../debug
+sqlite_helper_dir 	:= ./deps/sql-query-generator
+jstring_lib_dir 	:= ./deps/jstring
+debug_lib_dir 		:= ./deps/debug
 
 jstring_static_lib := $(jstring_lib_dir)/libjstring.a
 debug_static_lib := $(debug_lib_dir)/libdebug.a
@@ -39,10 +39,16 @@ $(lib_x86_ref_static): $(objects) $(sqlite_helper_static_lib) $(jstring_static_l
 $(sqlite_helper_static_lib):
 	$(MAKE) --directory=$(dir $@)
 
+$(jstring_static_lib):
+	$(MAKE) --directory=$(dir $@)
+
+$(debug_static_lib):
+	$(MAKE) --directory=$(dir $@)
+
 %.o: %.c intel_x86_ref.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-test:
+test: all
 	$(MAKE) --directory=$@
 
 clean: clean_test

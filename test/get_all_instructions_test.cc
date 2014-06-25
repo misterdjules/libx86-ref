@@ -10,10 +10,10 @@ TEST(x86_ref_get_all_instructions, basic)
 	instructions_list_t* instructions_list = NULL;
 	instruction_t* instruction             = NULL;
 
-	ASSERT_NE(NULL, ref_db)
+	ASSERT_TRUE(ref_db != NULL);
 
 	instructions_list = x86_ref_get_all_instructions(ref_db);
-	EXPECT_NE(NULL, instructions_list);
+	EXPECT_TRUE(instructions_list != NULL);
 
 	while ((instruction = x86_ref_next_instruction_from_list(&instructions_list)) != NULL)
 	{
@@ -23,8 +23,8 @@ TEST(x86_ref_get_all_instructions, basic)
 	}
 
 	instruction = x86_ref_get_instruction_by_mnemonic(ref_db, "ADD");
-	EXPECT_NE(NULL, instruction)
+	ASSERT_TRUE(instruction != NULL);
 	EXPECT_STREQ("ADD", x86_ref_get_instruction_mnemonic(instruction));
 
-	ASSERT_EQ(x86_ref_close_database(&ref_db) == X86_REF_OK)
+	ASSERT_EQ(x86_ref_close_database(&ref_db), X86_REF_OK);
 }

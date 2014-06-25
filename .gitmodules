@@ -1,0 +1,12 @@
+[submodule "deps/debug"]
+	path = deps/debug
+	url = git://github.com/misterdjules/debug.git
+[submodule "deps/jstring"]
+	path = deps/jstring
+	url = git://github.com/misterdjules/jstring.git
+[submodule "deps/sql-query-generator"]
+	path = deps/sql-query-generator
+	url = git://github.com/misterdjules/sql-query-generator.git
+[submodule "deps/mktools"]
+	path = deps/mktools
+	url = git://github.com/misterdjules/mktools.git

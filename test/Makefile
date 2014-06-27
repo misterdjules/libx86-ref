@@ -1,12 +1,12 @@
 include ../deps/mktools/show_make_rules.mk
 
 LIBX86_REF_DIR  := ..
-LIBX86_REF_STATIC_LIB := $(LIBX86_REF_DIR)/libx86ref.so
+LIBX86_REF_LIB := $(LIBX86_REF_DIR)/libx86ref.so
 
 GTEST_DIR 		:= gtest-1.7.0
 GTEST_MAIN_LIB 	:= ./$(GTEST_DIR)/make/gtest_main.a
 # Google Test uses thread for part of its implementation
-GTEST_LDFLAGS   := -lpthread $(LIBX86_REF_STATIC_LIB)
+GTEST_LDFLAGS   := -lpthread $(LIBX86_REF_LIB)
 
 INCLUDE_DIRS := $(LIBX86_REF_DIR) $(GTEST_DIR)/include
 

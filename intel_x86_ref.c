@@ -59,6 +59,8 @@ void x86_ref_destroy_instruction(instruction_t** instruction)
 const char* x86_ref_get_instruction_mnemonic(const instruction_t* instruction)
 {
 	assert(instruction);
+	if (!instruction)
+		return NULL;
 
 	return instruction->mnemonic;
 }
@@ -66,6 +68,8 @@ const char* x86_ref_get_instruction_mnemonic(const instruction_t* instruction)
 const char* x86_ref_get_instruction_synopsis(const instruction_t* instruction)
 {
 	assert(instruction);
+	if (!instruction)
+		return NULL;
 
 	return instruction->synopsis;
 }
@@ -73,6 +77,8 @@ const char* x86_ref_get_instruction_synopsis(const instruction_t* instruction)
 const char* x86_ref_get_instruction_opcode(const instruction_t* instruction)
 {
 	assert(instruction);
+	if (!instruction)
+		return NULL;
 
 	return instruction->opcode;
 }
@@ -80,6 +86,8 @@ const char* x86_ref_get_instruction_opcode(const instruction_t* instruction)
 const char* x86_ref_get_instruction_short_desc(const instruction_t* instruction)
 {
 	assert(instruction);
+	if (!instruction)
+		return NULL;
 
 	return instruction->short_desc;
 }
@@ -87,8 +95,19 @@ const char* x86_ref_get_instruction_short_desc(const instruction_t* instruction)
 const char* x86_ref_get_instruction_long_desc(const instruction_t* instruction)
 {
 	assert(instruction);
+	if (!instruction)
+		return NULL;
 
 	return instruction->long_desc;
+}
+
+const char* x86_ref_get_instruction_affected_flags(const instruction_t* instruction)
+{
+	assert(instruction);
+	if (!instruction)
+		return NULL;
+
+	return instruction->affected_flags;
 }
 
 typedef int (*set_field_operation_t)(instruction_t* instruction, const char* value);

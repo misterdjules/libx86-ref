@@ -130,6 +130,12 @@ X86_REF_API const char* x86_ref_get_instruction_short_desc(const instruction_t* 
  */
 X86_REF_API const char* x86_ref_get_instruction_long_desc(const instruction_t* instruction);
 
+/*
+ * Returns a string that describes which flags are affected by instruction "instruction".
+ * Returns NULL if "instruction" is null.
+ */
+X86_REF_API const char* x86_ref_get_instruction_affected_flags(const instruction_t* instruction);
+
 X86_REF_API const char* x86_ref_errmsg(ref_database_t* ref_db);
 
 #ifdef __cplusplus

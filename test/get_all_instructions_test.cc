@@ -20,6 +20,7 @@ TEST(x86_ref_get_all_instructions, basic)
 		fprintf(stdout, "Instruction: %s\n", x86_ref_get_instruction_mnemonic(instruction));
 		fprintf(stdout, "OpCode: %s\n", x86_ref_get_instruction_opcode(instruction));
 		fprintf(stdout, "Short desc: %s\n", x86_ref_get_instruction_short_desc(instruction));
+		fprintf(stdout, "Flags: %s\n", x86_ref_get_instruction_affected_flags(instruction));
 	}
 
 	instruction = x86_ref_get_instruction_by_mnemonic(ref_db, "ADD");
